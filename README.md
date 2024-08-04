@@ -1,23 +1,24 @@
 # Waveshare To i2c, UART, SPI, JTAG
 
-The CH347DLLA64.dll is a dynamic link library used for interfacing with the CH347 USB to serial interface chip. This DLL provides functions to control various operations on the CH347 chip, such as opening and closing the device, configuring communication parameters, and performing I2C, SPI, or GPIO operations.
+CH347DLLA64.dll Usage Guide
+The CH347DLLA64.dll library enables communication with the CH347 USB-to-serial interface chip, providing functionality for I2C, SPI, and GPIO operations. This guide outlines its primary functions and usage.
 
-Key Functions:
-CH347OpenDevice: Opens the USB device and returns a handle for communication.
-CH347CloseDevice: Closes the communication with the device.
-CH347StreamI2C: Performs I2C read and write operations, sending or receiving data to/from an I2C device.
-CH347I2C_Set: Configures the I2C interface, such as setting the clock speed.
-Usage:
-Initialization: Use CH347OpenDevice to start communication.
-Configuration: Use functions like CH347I2C_Set to set up the desired interface (e.g., I2C or SPI).
-Data Transfer: Use CH347StreamI2C to read from or write to connected devices.
-Cleanup: Use CH347CloseDevice to release the device when finished.
-Example Workflow:
-Open the Device: Establish communication with the CH347OpenDevice.
-Configure I2C: Set the clock speed using CH347I2C_Set.
-Read/Write Data: Use CH347StreamI2C for data transactions with peripheral devices.
-Close the Device: Properly close communication with CH347CloseDevice when done.
-Considerations:
-Make sure to check the return values of the functions for successful execution.
-Always close the device handle after operations to free resources.
-This DLL allows developers to interact programmatically with hardware components connected via USB through a CH347 chip, enabling the development of applications requiring I2C, SPI, or GPIO interfaces on Windows systems.
+Features
+I2C Communication: Supports I2C read/write operations, making it ideal for interfacing with various I2C devices.
+SPI Communication: Capable of SPI transactions for high-speed data transfer.
+GPIO Control: Offers GPIO pin control for general-purpose use.
+Multi-Platform Support: Compatible with multiple Windows versions and devices using the CH347 chip.
+
+
+Functions Overview
+
+Device Management 
+python
+  CH347OpenDevice: Opens a connection to the CH347 device. Returns a handle used for further operations.
+device_handle = ch347_dll.CH347OpenDevice(device_index)
+
+  CH347CloseDevice: Closes the connection to the CH347 device.
+ch347_dll.CH347CloseDevice(device_handle)
+
+# I2C Operations
+CH347I2C_Set: Configures the I2C interface, such as setting the I2C clock speed.
