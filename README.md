@@ -23,29 +23,34 @@ ch347_dll.CH347CloseDevice(device_handle)
   CH347I2C_Set: Configures the I2C interface, such as setting the I2C clock speed.
 result = ch347_dll.CH347StreamI2C(device_handle, write_length, write_buffer, read_length, read_buffer)
 
-# Example Usage
-import ctypes
+# Error Handling
+Always check return values for success and handle exceptions to ensure robust applications.
 
-# Load DLL
-ch347_dll = ctypes.windll.LoadLibrary("CH347DLLA64.dll")
+# Conclusion
+The CH347DLLA64.dll provides a powerful interface for communicating with devices via I2C, SPI, and GPIO. For detailed documentation, refer to the manufacturer's guide.
 
-# Open Device
-device_index = 0
-device_handle = ch347_dll.CH347OpenDevice(device_index)
-if device_handle == -1:
-    raise Exception("Failed to open CH347 device")
+# Project Overview
+This project demonstrates the use of the CH347DLLA64.dll library to interface with various hardware components using a CH347 USB-to-serial interface chip. The main components used in this project are:
 
-# Initialize I2C
-i2c_speed = 0x20  # Example speed value
-if not ch347_dll.CH347I2C_Set(device_handle, i2c_speed):
-    raise Exception("Failed to set I2C speed")
+DS3231 Real-Time Clock (RTC) Module: Reads the current time and date, and sets the RTC if the stored time is incorrect.
 
-# Perform I2C Read/Write
-write_data = (ctypes.c_ubyte * 3)(0xA0, 0x00, 0x01)  # Example write data
-read_data = (ctypes.c_ubyte * 2)()
-success = ch347_dll.CH347StreamI2C(device_handle, len(write_data), write_data, len(read_data), read_data)
-if not success:
-    raise Exception("Failed to perform I2C transaction")
+OLED Display: Displays the current time and date in a formatted manner, updating only when necessary to minimize flickering.
 
-# Close Device
-ch347_dll.CH347CloseDevice(device_handle)
+Adafruit 7-segment LED Display: Displays the current time using a 7-segment format, with toggling colon for second indication.
+
+# Program Descriptions
+I2C Scanner
+A utility script to scan for connected I2C devices, helping verify connections and addresses for connected components.
+
+# RTC Time Display
+Reads the time from a DS3231 RTC module. If the time is incorrect by a year, day, month, hour, minute, or 15 seconds, the program sets the correct time and date.
+
+# Features:
+Displays the current time, date, and day of the week on an OLED.
+Updates only when the display content changes, reducing flicker.
+LED Clock Display
+Outputs the time to a 7-segment LED display using the HT16K33 controller.
+
+# Features:
+Formats time into hour and minute segments.
+Toggles the colon for indicating seconds without display flickering.
