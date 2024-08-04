@@ -1,1 +1,1 @@
-# Waveshare-SBTOi2C
+# Waveshare To i2c, UART, SPI, JTAG
