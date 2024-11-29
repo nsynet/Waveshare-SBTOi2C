@@ -4,7 +4,7 @@ import os
 os.system('cls' if os.name == 'nt' else 'clear')  # Clear the console screen at the beginning
 
 # Load the Windows DLL for the CH347 device
-dll_path = os.path.join(os.getcwd(), 'CH347DLLA64.dll')  # Ensure the correct path
+dll_path = os.path.join(os.getcwd(), 'CH347DLLA64.DLL')  # Ensure the correct path
 ch347_dll = ctypes.windll.LoadLibrary(dll_path)
 
 # Define argument types and return types for the DLL functions
@@ -21,6 +21,16 @@ ch347_dll.CH347StreamI2C.argtypes = [
 ]
 ch347_dll.CH347StreamI2C.restype = ctypes.c_int
 
+ch347_dll.CH347StreamI2C_RetACK.argtypes = [
+    ctypes.c_uint, 
+    ctypes.c_uint,
+    ctypes.POINTER(ctypes.c_ubyte), 
+    ctypes.c_uint,
+    ctypes.POINTER(ctypes.c_ubyte),
+    ctypes.POINTER(ctypes.c_uint),
+]
+ch347_dll.CH347StreamI2C_RetACK.restype = ctypes.c_bool
+    
 class USBI2C:
     def __init__(self, usb_dev_index=0):
         self.dev_index = usb_dev_index
@@ -43,16 +53,19 @@ class USBI2C:
         grid = [['  ' for _ in range(16)] for _ in range(8)]
         found_devices = []
 
-        for address in range(0x03, 0x78):  # Scan I2C address range
+        for address in range(0x0, 0x80):  # Scan I2C address range
             write_buffer = (ctypes.c_ubyte * 1)(address << 1)  # Address as 7-bit write address
             read_buffer = (ctypes.c_ubyte * 1)()
+            ack_num = ctypes.c_ulong()
 
             # Attempt to write a dummy command to see if the device acknowledges
-            result = ch347_dll.CH347StreamI2C(self.dev_index, 1, write_buffer, 0, read_buffer)
+            result = ch347_dll.CH347StreamI2C_RetACK(self.dev_index, 1, write_buffer, 0, read_buffer , ctypes.byref(ack_num))
 
-            if result == 1:  # Non-zero indicates a device was acknowledged
-                grid[address // 16][address % 16] = '* '
+            if (result == 1) and (ack_num.value != 0):  # Non-zero indicates a device was acknowledged
+                grid[address // 16][address % 16] = '*  '
                 found_devices.append(address)
+            else:
+                grid[address // 16][address % 16] = '-  '            
 
         print("\nI2C Address Grid (marked with * where devices are found):")
         print("    " + "  ".join(f"{x:02X}" for x in range(16)))
